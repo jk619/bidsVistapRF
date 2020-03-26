@@ -6,7 +6,7 @@ close all
 tbUse docker-vista;
 
 
-addpath(genpath('./package/tdfwrite')) % consider adding this to external of mritools
+addpath(genpath('./package/')) % consider adding this to external of mritools
 
 
 param.solver                            = 'vista';
@@ -80,8 +80,7 @@ for s = 1  : length(subjects) % loop throught the subjects and fit the pRF
     modelType         = param.options.wsearch(~isspace(param.options.wsearch));
     stimulusinDeg     = param.stimulus.stimulus_diameter/2;
     
-    bidspRFVista(projectDir, subject, param.sessionName, parambold.TaskName, runnums, ...
-        dataFolder,dataStr,apertureFolder,modelType,stimulusinDeg,file99name,parambold.RepetitionTime)
+    bidspRFVista(projectDir, param, parambold)
     
     
 end
