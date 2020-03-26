@@ -24,7 +24,7 @@ parambold.TaskName                      = 'prf';
 
 
 [~,homedir]        = system('echo $HOME');
-projectDir         = sprintf('%s/Dropbox/bidsAnalyzeVista/BIDS',deblank(homedir));
+projectDir         = sprintf('%s/Dropbox/bidsAnalyzeVista/BIDS/bidsVistapRF',deblank(homedir));
 fmriprepDir        = sprintf('%s/derivatives/fmriprep',projectDir);
 subjects           = dir(sprintf('%s/*sub*',fmriprepDir));
 subjects           = subjects([subjects.isdir]);
