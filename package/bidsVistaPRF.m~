@@ -48,7 +48,7 @@ if ~exist('dataFolder', 'var') || isempty(dataFolder)
     dataFolder = 'fmriprep';
 end
 
-if ~exist('cfg', 'var') || isempty(dataFolder)
+if ~exist('cfg', 'var') || isempty(dataFolder) || cfg.load == 0;;
     %% prepare configuration files.
     
     %  Function prepare_configs_vista will create 4 default config files that are necessary
@@ -210,8 +210,8 @@ function save_stimulus_aperture_as_nii(stimulus,apertureFolder,subject,session,t
 
 
 stim = double(stimulus{1});
-niftiwrite(stim,[apertureFolder filesep sprintf('sub-%s_ses-%s_task-%s_apertures',...
-    subject,session,task)],'Compressed',true)
+niftiwrite(stim,[apertureFolder filesep sprintf('sub-%s/ses-%s/sub-%s_ses-%s_task-%s_apertures',...
+    subject,session,subject,session,task)],'Compressed',true)
 
 
 

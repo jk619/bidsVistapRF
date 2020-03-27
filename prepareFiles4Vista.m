@@ -26,7 +26,7 @@ cfg.param               = sprintf('%ssub-%s_ses-%s_task-%s_acq-normal_run-%i_cfg
 cfg.parambold           = sprintf('%ssub-%s_ses-%s_task-%s_acq-normal_run-%i_bold.json',filesDir_wrong,subject,session,task,runnumber);
 cfg.events              = sprintf('%ssub-%s_ses-%s_task-%s_events.json',filesDir_wrong,subject,session,task);
 cfg.events_tsv          = sprintf('%ssub-%s_ses-%s_task-%s_events.tsv',filesDir_wrong,subject,session,task);
-
+cfg.load                = 0;
 %% convert to mgz using freesurfer
 
 d = dir(sprintf('%s/*fsnative*.gii',filesDir));

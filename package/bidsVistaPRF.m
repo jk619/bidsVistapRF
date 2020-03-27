@@ -48,7 +48,7 @@ if ~exist('dataFolder', 'var') || isempty(dataFolder)
     dataFolder = 'fmriprep';
 end
 
-if ~exist('cfg', 'var') || isempty(dataFolder)
+if ~exist('cfg', 'var') || isempty(dataFolder) || cfg.load == 0
     %% prepare configuration files.
     
     %  Function prepare_configs_vista will create 4 default config files that are necessary
