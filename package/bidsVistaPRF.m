@@ -1,4 +1,4 @@
-function results = bidsVistaPRF(projectDir,param,parambold,runnums,dataFolder,dataStr,average_name,apertureFolder);
+function results =  bidsVistaPRF(projectDir,subject,session,task,runnums,dataFolder,dataStr,apertureFolder,filesDir,cfg);
 
 
 %
@@ -48,8 +48,19 @@ if ~exist('dataFolder', 'var') || isempty(dataFolder)
     dataFolder = 'fmriprep';
 end
 
-dataPath = fullfile(projectDir,'derivatives', dataFolder,...
-    sprintf('sub-%s',param.subjectName),filesep,sprintf('ses-%s',param.sessionName),'func');
+if ~exist('cfg', 'var') || isempty(dataFolder)
+    %% prepare configuration files.
+%
+%  Function prepare_configs_vista will create 4 config files that are necessary
+%  to run pRF vista solver in the docker. First two are configuration files
+%  of the docker "*cfg.json", and fMRI "*bold.json" (param and
+%  parambold variables defined in the beginning of this code) The
+%  remaining two files are event file with stimulus details and a
+%  coresponding json file. The output is the averge
+
+   cfg = preapre_configs_vista(projectDir,subject,session,task,apertureFolder);
+    
+end
 
 
 % <apertureFolder>
@@ -65,8 +76,8 @@ dataPath = fullfile(projectDir,'derivatives', dataFolder,...
 
 %****** Required inputs to vistsasoft *******************
 
-data = bidsGetPreprocData(dataPath, dataStr, {parambold.TaskName}, {runnums});
-tr   = parambold.RepetitionTime;
+data = bidsGetPreprocData(filesDir, dataStr, {task}, {runnums});
+tr   = cfg.parambold.RepetitionTime;
 
 %% Optional inputs to analyzePRF 
 %
@@ -96,14 +107,6 @@ niftiwrite(data_tmp,[average_name '_bold'],'Version','NIfTI2');
 hdr = niftiinfo([average_name '_bold']);
 hdr.SpaceUnits = 'Millimeter';
 hdr.TimeUnits  = 'Second';
-
-% nii_tmp = niftiRead([average_name '_bold.nii']);
-% nii_tmp.dim = nii_tmp.dim([2 1 3 4]);
-% nii_tmp.data =  permute(nii_tmp.data,[2 1 3 4]);
-% nii_tmp.pixdim = ones(1,4);
-% nii_tmp.xyz_units = 'mm';
-% nii_tmp.time_units = 'sec';
-
 
 %% debug
 hdr.ImageSize(1) = 100;
@@ -141,34 +144,61 @@ aPRF2Maps_vista(projectDir, subject, session, modelType);
 Maps2PNG(projectDir, subject, session, modelType);
 
 end
-
-
 %% ******************************
 % ******** SUBROUTINES **********
 % *******************************
 
-function pth = prfOptsMakeDefaultFile()
-    % see analyzePRF for descriptions of optional input 
-    
-    % average scans with identical stimuli
-    json.averageScans = [];  % 
-    json.stimwidth    = 24.2;  % degrees
-    
-    % other opts
-    json.opt.vxs            = []; 
-    json.opt.wantglmdenoise = []; 
-    json.opt.hrf            = [];
-    json.opt.maxpolydeg     = [];
-    json.opt.numperjob      = [];
-    json.opt.xvalmode       = [];
-    json.opt.seedmode       = [];
-    json.opt.maxiter        = [];
-    json.opt.display        = 'off';
-    json.opt.typicalgain    = [];
+function cfg = preapre_configs_vista(projectDir,subject,session,task,apertureFolder);
 
-                  
-    pth = fullfile(tempdir, 'prfOpts.json');
-    savejson('', json, 'FileName', pth);
-end      
-  
-           
+
+param.solver                            = 'vista';
+param.isPRFSynthData                    =  false;
+param.options.model                     = 'one gaussian';
+param.options.grid                      =  false
+param.options.wsearch                   = 'coarse to fine';
+param.options.detrend                   = 1;
+param.options.keepAllPoints             = false;
+param.options.numberStimulusGridPoints  = 50;
+param.stimulus.stimulus_diameter        = 24;
+
+parambold.RepetitionTime                = 1;
+parambold.SliceTiming                   = 0;
+parambold.TaskName                      = 'prf';
+
+
+file99name = sprintf('%ssub-%s/ses-%s/func/sub-%s_ses-%s_task-%s_acq-normal_run-99', ...
+    projectDir,subject,session,subject,session,task);
+
+opt.ParseLogical = 1;
+opt.FileName = [file99name '_cfg.json'];
+savejson('',param,opt);
+
+opt.FileName = [file99name '_bold.json'];
+savejson('',parambold,opt);
+
+
+aperture_size = size(niftiread([apertureFolder filesep 'apertures.nii.gz']));
+fid.onset = zeros([aperture_size(3) 1]);
+fid.duration = zeros([aperture_size(3) 1]);
+fid.stim_file_index = zeros([aperture_size(3) 1]);
+
+for f = 1 : aperture_size(3)
+    
+    fid.onset(f) = f - 1;
+    fid.duration(f) = 1;
+    fid.stim_file(f,:) = sprintf('sub-%s_ses-%s_task-%s_apertures.nii.gz',...
+        subject,session,task);
+    fid.stim_file_index(f) = f;
+    
+end
+
+tdfwrite([projectDir filesep sprintf('sub-%s/ses-%s/func/sub-%s_ses-%s_task-%s_events.tsv',...
+    subject,session,subject,session,task)],fid);
+
+stim_file_index.Description = '1-based index into the stimulus file of the relevant stimulus';
+savejson('stim_file_index',stim_file_index,[projectDir filesep sprintf('sub-%s/ses-%s/func/sub-%s_ses-%s_task-%s_events.json',...
+    subject,session,subject,session,task)]);
+
+cfg.param = param;
+cfg.parambold = parambold;
+end
