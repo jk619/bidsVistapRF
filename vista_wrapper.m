@@ -1,4 +1,4 @@
-% To run PRF analysis on sample data with vista solver (docker)
+% To run PRF analysis on one subject with BIDS formatting with vista solver (docker)
 clc
 clear
 close all
