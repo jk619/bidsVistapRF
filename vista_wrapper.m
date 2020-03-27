@@ -29,7 +29,7 @@ cfg.events_tsv          = sprintf('%ssub-%s_ses-%s_task-%s_events.tsv',filesDir_
 cfg.average_filename    = sprintf('%ssub-%s/ses-%s/func/sub-%s_ses-%s_task-%s_acq-normal_run-%i',projectDir,subject,session,subject,session,task,runnumber);
 cfg.load                = 0; % create default cfg file (NYU settings)
 
-debug                   = 1; % fit only 10 voxels to see if code runs
+debug                   = 1; % fit only 10 voxels to see if the code runs
 
 %% convert to mgz using freesurfer
 
