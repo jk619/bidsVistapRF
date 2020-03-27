@@ -122,8 +122,8 @@ inputVar = struct('projectDir', projectDir, 'subject', param.subjectName, ...
 fname = sprintf('sub-%s_ses-%s_%s_inputVar.json', param.subjectName, param.subjectName, param.options.wsearch(~isspace(param.options.wsearch)));
 
 %   <resultsdir>
-resultsdir   = fullfile (projectDir,'derivatives','vistasoft', param.options.wsearch(~isspace(param.options.wsearch)), ...
-                 sprintf('sub-%s',param.subjectName), sprintf('ses-%s',param.sessionName));
+resultsdir   = fullfile (projectDir,'derivatives','vistasoft', modelType, ...
+                 sprintf('sub-%s',subject), sprintf('ses-%s',session));
 
 if ~exist(resultsdir, 'dir'); mkdir(resultsdir); end
 
@@ -131,7 +131,7 @@ savejson('',inputVar,fullfile(resultsdir,fname));
 
 
 %% Run the analyzePRF alogithm
-analyzeVISTA(average_name);
+analyzeVISTA(file99name);
 
 
 % save the results as mgz files

@@ -1,6 +1,6 @@
 % To run PRF analysis on sample data with vista solver
 clc
-clear 
+clear
 close all
 %% 1. open matlab and add paths:
 tbUse docker-vista;
@@ -28,69 +28,62 @@ projectDir                              = sprintf('./../BIDS/'); % path to folde
 fmriprepDir                             = sprintf('%sderivatives/fmriprep',projectDir);
 subjects                                = dir(sprintf('%s/*sub*',fmriprepDir));
 subjects                                = subjects([subjects.isdir]);
-apertureFolder                          = fullfile(projectDir,'Stimuli');
 
+apertureFolder                          = fullfile(projectDir,'Stimuli');
 %%
-for s = 1  : length(subjects) % loop throught the subjects and fit the pRF
+
+%% prepare configuration files.
+%
+%  Function prepare_configs_vista will create 4 config files that are necessary
+%  to run pRF vista solver in the docker. First two are configuration files
+%  of the docker "*cfg.json", and fMRI "*bold.json" (param and
+%  parambold variables defined in the beginning of this code) The
+%  remaining two files are event file with stimulus details and a
+%  coresponding json file. The output is the averge
+
+param.sessionName        = 'nyu3t01';
+param.subjectName        = 'wlsubj042';
+
+average_name = preapre_configs_vista(projectDir,param,parambold,apertureFolder);
+
+
+%% add an aperture file
+copyfile([apertureFolder filesep 'apertures.nii.gz'],...
+    [apertureFolder filesep sprintf('sub-%s_ses-%s_task-%s_apertures.nii.gz',...
+    param.subjectName,param.sessionName,parambold.TaskName)])
+
+%% convert to mgz using freesurfer
+files_dir      = sprintf('%s/sub-%s/ses-%s/func',fmriprepDir,param.subjectName,param.sessionName);
+
+d = dir(sprintf('%s/*fsnative*.gii',files_dir));
+for ii = 1:length(d)
     
-    %% prepare configuration files.
-    %
-    %  Function prepare_configs_vista will create 4 config files that are necessary
-    %  to run pRF vista solver in the docker. First two are configuration files
-    %  of the docker "*cfg.json", and fMRI "*bold.json" (param and
-    %  parambold variables defined in the beginning of this code) The
-    %  remaining two files are event file with stimulus details and a
-    %  coresponding json file. The output is the averge 
+    [~, fname] = fileparts(d(ii).name);
+    str = sprintf('mri_convert %s/%s.gii %s/%s.mgz',files_dir, fname, files_dir,fname);
     
-    tmp = strfind(subjects(s).name,'-');
-    subject = subjects(s).name(tmp+1:end);
-    
-    param.sessionName        = 'nyu3t01';
-    param.subjectName        = subject;
-    
-    average_name = preapre_configs_vista(projectDir,param,parambold,apertureFolder);
-    
-    
-     %% add an aperture file
-    copyfile([apertureFolder filesep 'apertures.nii.gz'],...
-        [apertureFolder filesep sprintf('sub-%s_ses-%s_task-%s_apertures.nii.gz',...
-        subject,param.sessionName,parambold.TaskName)])
-    
-    %% convert to mgz using freesurfer
-    files_dir      = sprintf('%s/sub-%s/ses-%s/',fmriprepDir,subject,param.sessionName);
-    
-    d = dir(sprintf('%s/*fsnative*.gii',files_dir));
-    for ii = 1:length(d)
-        
-        [~, fname] = fileparts(d(ii).name);
-        str = sprintf('mri_convert %s/%s.gii %s/%s.mgz',files_dir, fname, files_dir,fname);
-        
-        if ~exist(sprintf('%s/%s.mgz',files_dir, fname'),'file') == 1
-            system(str);
-        end
-        
+    if ~exist(sprintf('%s/%s.mgz',files_dir, fname'),'file') == 1
+        system(str);
     end
     
-   
-
-
-    dataFolder        = 'fmriprep';
-    dataStr           = 'fsnative*.mgz';
-    runnums           = 1:length(d)/2;
-    modelType         = param.options.wsearch(~isspace(param.options.wsearch));
-    stimulusinDeg     = param.stimulus.stimulus_diameter/2;
-    
-    bidspRFVista(projectDir, param, parambold)
-    
-    
 end
+
+runnums           =  ones(1,length(d)/2);
+dataFolder        = 'fmriprep';
+dataStr           = 'fsnative*.mgz';
+
+
+results = bidsVistaPRF(projectDir, param, parambold,runnums,dataFolder,dataStr,average_name,apertureFolder);
+
+
+
+
 
 %% ******************************
 % ******** SUBROUTINES **********
 % *******************************
 
 function file99name = preapre_configs_vista(projectDir,param,parambold,apertureFolder)
-   
+
 
 file99name = sprintf('%ssub-%s/ses-%s/func/sub-%s_ses-%s_task-%s_acq-normal_run-99', ...
     projectDir,param.subjectName,param.sessionName,param.subjectName,param.sessionName,parambold.TaskName);
@@ -119,11 +112,10 @@ for f = 1 : aperture_size(3)
 end
 
 tdfwrite([projectDir filesep sprintf('sub-%s/ses-%s/func/sub-%s_ses-%s_task-%s_events.tsv',...
-    param.subjectName,param.sessionName,param.subjectName,param.sessionName,parambold.TaskName)],fid)
+    param.subjectName,param.sessionName,param.subjectName,param.sessionName,parambold.TaskName)],fid);
 
-stim_file_index.Description = '1-based index into the stimulus file of the relevant stimulus'
+stim_file_index.Description = '1-based index into the stimulus file of the relevant stimulus';
 savejson('stim_file_index',stim_file_index,[projectDir filesep sprintf('sub-%s/ses-%s/func/sub-%s_ses-%s_task-%s_events.json',...
-    param.subjectName,param.sessionName,param.subjectName,param.sessionName,parambold.TaskName)])
+    param.subjectName,param.sessionName,param.subjectName,param.sessionName,parambold.TaskName)]);
 
-end      
-   
+end
