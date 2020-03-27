@@ -7,6 +7,7 @@ tbUse docker-vista;
 
 
 addpath(genpath('./package/')) % consider adding this to external of mritools
+setenv('PATH', ['/usr/local/bin:' getenv('PATH')]);
 
 session             = 'nyu3t01';
 subject             = 'wlsubj042';
@@ -31,7 +32,7 @@ cfg.average_filename    = sprintf('%ssub-%s/ses-%s/func/sub-%s_ses-%s_task-%s_ac
 cfg.load                = 0; % create default cfg file (NYU color retinotopy settings)
 cfg.space               = 'native';
 
-debug                   = 1; % fit only 10 voxels to see if the code runs
+debug                   = 0; % fit only 10 voxels to see if the code runs
 
 %% convert to mgz using freesurfer
 
