@@ -88,7 +88,7 @@ else
 end
 
 tr   = cfg.parambold.RepetitionTime;
-%% Optional inputs to analyzePRF
+
 
 averageScans = runnums>0;
 
@@ -136,7 +136,7 @@ if ~exist(resultsdir, 'dir'); mkdir(resultsdir); end
 savejson('',inputVar,fullfile(resultsdir,fname));
 
 
-%% Run the analyzePRF alogithm
+%% Run the docker and load the results
 analyzeVISTA(cfg);
 
 load(sprintf('%s/derivatives/prfanalyze-vista/sub-%s/ses-%s/sub-%s_ses-%s_task-%s_acq-normal_run-%i_results.mat',projectDir,subject,session,subject,session,task,runnumber),'results');
