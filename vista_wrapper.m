@@ -52,7 +52,7 @@ runnums                   =  1:length(d)/2; % / because there are 2 hemi
 dataStr                   = sprintf('%s*.mgz',cfg.space);
 
 
-results = bidsVistaPRF(projectDir,subject,session,task,runnums,dataFolder,dataStr,apertureFolder,filesDir,cfg,debug,runnumber);
+results = bidsVistaPRF(projectDir,subject,session,task,runnums,dataFolder,dataStr,apertureFolder,filesDir,debug,runnumber,cfg);
 
 
 
