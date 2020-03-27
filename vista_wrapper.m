@@ -1,4 +1,4 @@
-% To run PRF analysis on sample data with vista solver
+% To run PRF analysis on sample data with vista solver (docker)
 clc
 clear
 close all
@@ -17,8 +17,9 @@ task                = 'prf';
 projectDir          = sprintf('./../BIDS/'); % path to folder with derivatives
 apertureFolder      = sprintf('%sStimuli',projectDir);
 % apertureFolder      = sprintf('%sderivatives/stim_apertures',projectDir);
+dataFolder          = 'fmriprep';
 
-filesDir            = sprintf('%sderivatives/fmriprep/sub-%s/ses-%s/func',projectDir,subject,session);
+filesDir            = sprintf('%sderivatives/%s/sub-%s/ses-%s/func',projectDir,dataFolder,subject,session);
 filesDir_wrong      = sprintf('%ssub-%s/ses-%s/func/',projectDir,subject,session);
 %% path2configs 
 
@@ -27,13 +28,14 @@ cfg.parambold           = sprintf('%ssub-%s_ses-%s_task-%s_acq-normal_run-%i_bol
 cfg.events              = sprintf('%ssub-%s_ses-%s_task-%s_events.json',filesDir_wrong,subject,session,task);
 cfg.events_tsv          = sprintf('%ssub-%s_ses-%s_task-%s_events.tsv',filesDir_wrong,subject,session,task);
 cfg.average_filename    = sprintf('%ssub-%s/ses-%s/func/sub-%s_ses-%s_task-%s_acq-normal_run-%i',projectDir,subject,session,subject,session,task,runnumber);
-cfg.load                = 0; % create default cfg file (NYU settings)
+cfg.load                = 0; % create default cfg file (NYU color retinotopy settings)
+cfg.space               = 'native';
 
 debug                   = 1; % fit only 10 voxels to see if the code runs
 
 %% convert to mgz using freesurfer
 
-d = dir(sprintf('%s/*fsnative*.gii',filesDir));
+d = dir(sprintf('%s/*%s*.gii',filesDir,cfg.space));
 for ii = 1:length(d)
     
     [~, fname] = fileparts(d(ii).name);
@@ -46,8 +48,8 @@ for ii = 1:length(d)
 end
 
 runnums           =  1:length(d)/2; % / because there are 2 hemi
-dataFolder        = 'fmriprep';
-dataStr           = 'fsnative*.mgz';
+
+dataStr           = sprintf('%s*.mgz',cfg.space);
 
 
 results = bidsVistaPRF(projectDir,subject,session,task,runnums,dataFolder,dataStr,apertureFolder,filesDir,cfg,debug,runnumber);
