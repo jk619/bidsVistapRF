@@ -1,4 +1,4 @@
-function results =  bidsVistaPRF(projectDir,subject,session,task,runnums,dataFolder,dataStr,apertureFolder,filesDir,cfg,debug,runnumber)
+function results =  bidsVistaPRF(projectDir,subject,session,task,runnums,dataFolder,dataStr,apertureFolder,filesDir,debug,runnumber,cfg)
 
 
 %
