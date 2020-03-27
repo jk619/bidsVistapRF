@@ -1,4 +1,4 @@
-function results =  bidsVistaPRF(projectDir,subject,session,task,runnums,dataFolder,dataStr,apertureFolder,filesDir,cfg,debug)
+function results =  bidsVistaPRF(projectDir,subject,session,task,runnums,dataFolder,dataStr,apertureFolder,filesDir,cfg,debug,runnumber)
 
 
 %
@@ -111,8 +111,8 @@ hdr.TimeUnits  = 'Second';
 
 %% debug
 if debug
-    hdr.ImageSize(1) = 100;
-    data_tmp = data_tmp(1:100,:,:,:);
+    hdr.ImageSize(1) = 10;
+    data_tmp = data_tmp(1:10,:,:,:);
     niftiwrite(data_tmp,[cfg.average_filename '_bold'],hdr,'Compressed',true);
 else
     niftiwrite(data_tmp,[cfg.average_filename '_bold'],hdr,'Compressed',true);
@@ -137,14 +137,14 @@ savejson('',inputVar,fullfile(resultsdir,fname));
 
 
 %% Run the analyzePRF alogithm
-analyzeVISTA(cfg.average_filename);
+analyzeVISTA(cfg);
 
-
+load(sprintf('%s/derivatives/prfanalyze-vista/sub-%s/ses-%s/sub-%s_ses-%s_task-%s_acq-normal_run-%i_results.mat',projectDir,subject,session,subject,session,task,runnumber),'results');
 % save the results as mgz files
-aPRF2Maps_vista(projectDir, subject, session, modelType);
+% aPRF2Maps_vista(projectDir, subject, session, modelType);
 
 % save out .png files of angle, ecc, sigma, R2 for lh and rh
-Maps2PNG(projectDir, subject, session, modelType);
+% Maps2PNG(projectDir, subject, session, modelType);
 
 end
 %% ******************************
