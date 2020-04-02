@@ -1,4 +1,4 @@
-function bidsVistaPRF(mainDir,projectDir,subject,session,task,runnums,dataFolder,dataStr,apertureFolder,filesDir,debug,averageFolName,cfg,dockerscript)
+function bidsVistaPRF(mainDir,projectDir,subject,session,task,runnums,dataFolder,dataStr,apertureFolder,filesDir,debug,averageFolDir,cfg,dockerscript)
 
 
 %
@@ -77,7 +77,7 @@ if ~exist('cfg', 'var') || isempty(dataFolder) || cfg.load == 0
     %  remaining two files are event file with stimulus details and a
     %  coresponding json file. The output is the averge
     
-    cfg = preapre_configs_vista(subject,session,task,stimulus,averageFolName);
+    cfg = preapre_configs_vista(subject,session,task,stimulus,averageFolDir);
     
     
 else
@@ -136,7 +136,7 @@ end
 
 
 %% Run the docker and load the results
-analyzeVISTA(mainDir,cfg,averageFolName,subject,session,apertureFolder,dockerscript);
+analyzeVISTA(mainDir,cfg,averageFolDir,subject,session,apertureFolder,dockerscript);
 
 %% Save input arguments
 

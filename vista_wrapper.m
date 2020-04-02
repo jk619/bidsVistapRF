@@ -15,20 +15,15 @@ task                    = 'prf';
 
 
 
-mainDir                 = sprintf('./../'); % points to a folder were your 
-                                            % BIDS formated folder is sitting 
-                                            % this is needed only for the
-                                            % docker so it knows where to
-                                            % output the prf fitting
-                                            % results
-                                            
+mainDir                 = sprintf('./../'); % points to a folder were your BIDS formated folder is sitting 
 BidsDir                 = 'BIDS'; % name of the folder with derivatives
 projectDir              = sprintf('./../%s/',BidsDir); 
 apertureFolder          = sprintf('%sderivatives/stim_apertures',projectDir);
 dataFolder              = 'fmriprep';
 
 filesDir                = sprintf('%sderivatives/%s/sub-%s/ses-%s/func',projectDir,dataFolder,subject,session);
-averageFolName          = sprintf('%sderivatives/averageTCs',projectDir);
+averageFolName          = 'averageTCs';
+averageFolDir           = sprintf('%sderivatives/%s',projectDir,averageFolName);
 
 %% path2configs 
 
@@ -64,10 +59,12 @@ for ii = 1:length(d)
 end
 
 runnums                   =  1:length(d)/2; % / because there are 2 hemi
+runnums                   =  2; % / because there are 2 hemi
+
 dataStr                   =  sprintf('%s*.mgz',cfg.space);
 
 
-bidsVistaPRF(mainDir,projectDir,subject,session,task,runnums,dataFolder,dataStr,apertureFolder,filesDir,debug,averageFolName,cfg,dockerscript);
+bidsVistaPRF(mainDir,projectDir,subject,session,task,runnums,dataFolder,dataStr,apertureFolder,filesDir,debug,averageFolDir,cfg,dockerscript);
 
 
 
