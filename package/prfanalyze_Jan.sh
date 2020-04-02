@@ -100,7 +100,11 @@ VERSION=""
 SOLVER="" 
 OUTPUT=""
 CONFIG=""
+STIMDIR=""
+
+
 OPTS=()
+
 
 
 # Arguments ####################################################################
@@ -155,6 +159,8 @@ do   case "$1"
             then OUTPUT="$1"
             elif [ -z "$CONFIG" ]
             then CONFIG="$1"
+            elif [ -z "$STIMDIR" ]
+            then STIMDIR="$1"
             else # we've reached the point where everything that follows is
                  # just extra arguments for the solver...
                  OPTS=( "${OPTS[@]}" "$1" )
@@ -184,6 +190,10 @@ OUTPUT="$ABSPATH"
     abspath "$CONFIG"
     CONFIG="$ABSPATH"
 }
+[ -z "$STIMDIR" ] || {
+    abspath "$STIMDIR"
+    STIMDIR="$ABSPATH"
+}
 
 # Okay, let's print a diagnostic message (if verbose is on)
 note "Running prfanalyze.sh with the following options:"
@@ -191,6 +201,8 @@ note "   solver: $SOLVER"
 note "   docker: $DOCKER"
 note "   config: $CONFIG"
 note "   output: $OUTPUT"
+note "   stimdir: $STIMDIR"
+
 if   [ ${#OPTS[@]} -gt 0 ]
 then note "  options: ${OPTS[@]}"
 else note "  options: <none>"
@@ -215,8 +227,9 @@ then ARGS_IN=()
 elif [ -d "$CONFIG" ]
 then ARGS_IN=("-v" "${CONFIG}:/flywheel/v0/input:ro")
 else # In this case, we also map the output dir to the input
-     ARGS_IN=("-v" "${OUTPUT}:/flywheel/v0/input"
-              "-v" "${CONFIG}:/flywheel/v0/input/config.json:ro")
+     ARGS_IN=("-v" "${OUTPUT}:/flywheel/v0/input/BIDS"
+              "-v" "${CONFIG}:/flywheel/v0/input/config.json:ro"
+              "-v" "${STIMDIR}:/flywheel/v0/input/BIDS/stimuli")
 fi
 ARGS_OUT=("-v" "${OUTPUT}:/flywheel/v0/output")
 if   [ $DEBUG = 1 ]

@@ -14,16 +14,7 @@ runnumber               = 99;
 task                    = 'prf';
 
 
-
-mainDir                 = sprintf('./../'); % points to a folder were your 
-                                            % BIDS formated folder is sitting 
-                                            % this is needed only for the
-                                            % docker so it knows where to
-                                            % output the prf fitting
-                                            % results
-                                            
-BidsDir                 = 'BIDS'; % name of the folder with derivatives
-projectDir              = sprintf('./../%s/',BidsDir); 
+projectDir              = sprintf('./../BIDS/'); % path to folder with derivatives
 apertureFolder          = sprintf('%sderivatives/stim_apertures',projectDir);
 dataFolder              = 'fmriprep';
 
@@ -44,9 +35,8 @@ cfg.space               = 'native';
 dockerscript            = 'prfanalyze_Jan_in_out.sh';
 
 
-debug.ifdebug           = 1; % fit pRFs only in rois specifed below
-debug.roiname           = {'V1_exvivo';'V2_exvivo'}; % Roi or Rois from freesurfer label directory for the debug mode
-debug.ifdebug           = 2; % fit pRFs only in 10 voxels
+cdebug.roiname           = {'V1_exvivo';'V2_exvivo'}; % Roi or Rois from freesurfer label directory for the debug mode
+
 %% convert to mgz using freescdurfer
 
 d = dir(sprintf('%s/*%s*.gii',filesDir,cfg.space));
@@ -67,7 +57,7 @@ runnums                   =  1:length(d)/2; % / because there are 2 hemi
 dataStr                   =  sprintf('%s*.mgz',cfg.space);
 
 
-bidsVistaPRF(mainDir,projectDir,subject,session,task,runnums,dataFolder,dataStr,apertureFolder,filesDir,debug,averageFolName,cfg,dockerscript);
+bidsVistaPRF(projectDir,subject,session,task,runnums,dataFolder,dataStr,apertureFolder,filesDir,debug,averageFolName,cfg,dockerscript);
 
 
 

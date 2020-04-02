@@ -1,15 +1,15 @@
-function analyzeVISTA(cfg)
+function analyzeVISTA(mainDir,cfg,averageFolName,subject,session,apertureFolder,dockerscript)
 
 
-newfilename = cfg.average_filename;
 
-BIDS = strfind(newfilename,'BIDS')
-BIDSdir = newfilename(1:BIDS-1);
-cfgfile = [newfilename '_cfg.json'];
+mystimdir = [apertureFolder filesep sprintf('sub-%s/ses-%s/',subject,session)];
+cfgfile = [cfg.average_filename '_cfg.json'];
+% outputdir = sprintf('%s',projectDir)
+% outputdir = averageFolName;
 
-!chmod 755 ./package/prfanalyze.sh
-system(sprintf('./package/prfanalyze.sh vista %s %s', ...
-        BIDSdir,cfgfile))
+
+system(sprintf('chmod 755 ./package/%s',dockerscript))
+system(sprintf('./package/%s vista %s %s %s %s',dockerscript,averageFolName,cfgfile,mystimdir,mainDir))
 
 
 end
