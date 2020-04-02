@@ -1,4 +1,4 @@
-function bidsVistaPRF(mainDir,projectDir,subject,session,task,runnums,dataFolder,dataStr,apertureFolder,filesDir,debug,averageFolDir,cfg,dockerscript)
+function bidsVistaPRF(mainDir,projectDir,subject,session,task,runnums,dataFolder,dataStr,apertureFolder,filesDir,debug,averageFolDir,cfg,dockerscript,runnumber)
 
 
 %
@@ -77,7 +77,7 @@ if ~exist('cfg', 'var') || isempty(dataFolder) || cfg.load == 0
     %  remaining two files are event file with stimulus details and a
     %  coresponding json file. The output is the averge
     
-    cfg = preapre_configs_vista(subject,session,task,stimulus,averageFolDir);
+    cfg = preapre_configs_vista(subject,session,task,stimulus,averageFolDir,runnumber);
     
     
 else
@@ -177,7 +177,11 @@ end
 % ******** SUBROUTINES **********
 % *******************************
 
-function cfg = preapre_configs_vista(subject,session,task,stimulus,averageFolName)
+function cfg = preapre_configs_vista(subject,session,task,stimulus,averageFolName,runnumber)
+
+
+file99nameFol = sprintf('%s/sub-%s/ses-%s/func/',averageFolName,subject,session);
+
 
 
 param.solver                            = 'vista';
@@ -191,12 +195,12 @@ param.options.numberStimulusGridPoints  = 50;
 param.stimulus.stimulus_diameter        = 24;
 param.subjectName                       = subject;
 param.sessionName                       = session;
+param.basename                          = sprintf('sub-%s_ses-%s_task-%s_acq-normal_run-%i',subject,session,task,runnumber);
 parambold.RepetitionTime                = 1;
 parambold.SliceTiming                   = 0;
 parambold.TaskName                      = 'prf';
 
 
-file99nameFol = sprintf('%s/sub-%s/ses-%s/func/',averageFolName,subject,session);
 
 if ~exist(file99nameFol,'dir')
     mkdir(file99nameFol)  

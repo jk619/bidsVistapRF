@@ -27,11 +27,12 @@ averageFolDir           = sprintf('%sderivatives/%s',projectDir,averageFolName);
 
 %% path2configs 
 
-cfg.param               = sprintf('%s/sub-%s/ses-%s/func/sub-%s_ses-%s_task-%s_acq-normal_run-%i_cfg.json',averageFolName,subject,session,subject,session,task,runnumber);
-cfg.parambold           = sprintf('%s/sub-%s/ses-%s/func/sub-%s_ses-%s_task-%s_acq-normal_run-%i_bold.json',averageFolName,subject,session,subject,session,task,runnumber);
-cfg.events              = sprintf('%s/sub-%s/ses-%s/func/sub-%s_ses-%s_task-%s_events.json',averageFolName,subject,session,subject,session,task);
-cfg.events_tsv          = sprintf('%s/sub-%s/ses-%s/func/sub-%s_ses-%s_task-%s_events.tsv',averageFolName,subject,session,subject,session,task);
-cfg.average_filename    = sprintf('%s/sub-%s/ses-%s/func/sub-%s_ses-%s_task-%s_acq-normal_run-%i',averageFolName,subject,session,subject,session,task,runnumber);
+
+cfg.basename            = sprintf('sub-%s_ses-%s_task-%s_acq-normal_run-%i',subject,session,task,runnumber);
+cfg.param               = sprintf('%s/sub-%s/ses-%s/func/%s_cfg.json',averageFolDir,subject,session,cfg.basename,runnumber);
+cfg.parambold           = sprintf('%s/sub-%s/ses-%s/func/%s_bold.json',averageFolDir,subject,session,cfg.basename,runnumber);
+cfg.events              = sprintf('%s/sub-%s/ses-%s/func/sub-%s_ses-%s_task-%s_events.json',averageFolDir,subject,session,subject,session,task);
+cfg.events_tsv          = sprintf('%s/sub-%s/ses-%s/func/sub-%s_ses-%s_task-%s_events.tsv',averageFolDir,subject,session,subject,session,task);
 cfg.load                = 0; % create default cfg file (NYU color retinotopy settings)
 cfg.space               = 'native';
 
@@ -64,7 +65,7 @@ runnums                   =  2; % / because there are 2 hemi
 dataStr                   =  sprintf('%s*.mgz',cfg.space);
 
 
-bidsVistaPRF(mainDir,projectDir,subject,session,task,runnums,dataFolder,dataStr,apertureFolder,filesDir,debug,averageFolDir,cfg,dockerscript);
+bidsVistaPRF(mainDir,projectDir,subject,session,task,runnums,dataFolder,dataStr,apertureFolder,filesDir,debug,averageFolDir,cfg,dockerscript,runnumber);
 
 
 
