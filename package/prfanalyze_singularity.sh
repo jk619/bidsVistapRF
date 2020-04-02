@@ -234,7 +234,9 @@ fi
 if   [ -z "$CONFIG" ]
 then ARGS_IN=()
 elif [ -d "$CONFIG" ]
-then ARGS_IN=("-v" "${CONFIG}:/flywheel/v0/input:ro")
+then ARGS_IN=("-v" "${CONFIG}:/flywheel/v0/input"
+              "-v" "${INPUT}:/flywheel/v0/input/BIDS"
+              "-v" "${STIMDIR}:/flywheel/v0/input/BIDS/stimuli:ro")
 else # In this case, we also map the INPUT dir to the input
      ARGS_IN=("-v" "${INPUT}:/flywheel/v0/input/BIDS"
               "-v" "${CONFIG}:/flywheel/v0/input/config.json:ro"
