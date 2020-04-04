@@ -15,13 +15,16 @@ mkdir(tmp)
 % copyfile(cfgfile,[tmp filesep cfg.param.basename '_cfg.json'])
 copyfile(cfgfile,[tmp filesep 'config.json'])
 
+
+
+if contains(dockerscript,'singularity')
     
+    singimg = '/Users/jankurzawski/Documents/singularity-vm/vista.sif';
+    system(sprintf('./package/%s vista %s %s %s %s %s',dockerscript,averageFolDir,tmp,stimulusDir,mainDir,singimg));
     
-% elseif contains(dockerscript,'docker')
-
-% end
-
-system(sprintf('./package/%s vista %s %s %s %s',dockerscript,averageFolDir,tmp,stimulusDir,mainDir))
-
+elseif contains(dockerscript,'docker')
+    
+    system(sprintf('./package/%s vista %s %s %s %s',dockerscript,averageFolDir,tmp,stimulusDir,mainDir));
+    
 end
 

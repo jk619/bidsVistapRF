@@ -89,8 +89,8 @@ function abspath {
 
 # Default Options ##############################################################
 
-DOCKERBASE="garikoitz/prfanalyze-" # the docker string prefix
-VERBOSE=1   # quiet by default
+DOCKERBASE="" # the docker string prefix
+VERBOSE=0   # quiet by default
 FORCE=0     # don't force overwrite
 DEBUG=0     # don't do debug mode by default
 PULL=0      # don't pull images by default
@@ -102,6 +102,7 @@ INPUT=""
 OUTPUT=""
 CONFIG=""
 STIMDIR=""
+SINGIMG=""
 
 
 OPTS=()
@@ -121,24 +122,8 @@ do   case "$1"
             help
             exit 0
             ;;
-        "--force"|"-f")
-            FORCE=1
-            ;;
         "--verbose"|"-v")
             VERBOSE=1
-            ;;
-        "--pull"|"-p")
-            PULL=1
-            ;;
-        "--version"|"-V")
-            [ "$#" -lt 2 ] && die "Option $1 requies an argument."
-            shift
-            VERSION="$1"
-            ;;
-        "--base"|"-b")
-            [ "$#" -lt 2 ] && die "Option $1 requies an argument."
-            shift
-            DOCKERBASE="$1"
             ;;
         "--out"|"-o")
             [ "$#" -lt 2 ] && die "Option $1 requies an argument."
@@ -164,6 +149,8 @@ do   case "$1"
             then STIMDIR="$1"
             elif [ -z "$OUTPUT" ]
             then OUTPUT="$1"
+            elif [ -z "$SINGIMG" ]
+            then SINGIMG="$1"
             else # we've reached the point where everything that follows is
                  # just extra arguments for the solver...
                  OPTS=( "${OPTS[@]}" "$1" )
@@ -182,10 +169,8 @@ done
     die 'Use --help flag to see usage documentation'
 }
 
-# if version isn't provided, we use latest
-[ -z "$VERSION" ] && VERSION="latest"
+
 # we can construct the docker name now:
-DOCKER="${DOCKERBASE}${SOLVER}:$VERSION"
 # get the abspath for the config file and INPUT directories
 abspath "$INPUT"
 INPUT="$ABSPATH"
@@ -203,14 +188,19 @@ INPUT="$ABSPATH"
     OUTPUT="$ABSPATH"
 }
 
+[ -z "$SINGIMG" ] || {
+    abspath "$SINGIMG"
+    SINGIMG="$ABSPATH"
+}
+
 # Okay, let's print a diagnostic message (if verbose is on)
 note "Running prfanalyze.sh with the following options:"
-note "   solver:  $SOLVER"
-note "   docker:  $DOCKER"
-note "   config:  $CONFIG"
-note "   input:   $INPUT"
-note "   stimdir: $STIMDIR"
-note "   output:  $OUTPUT"
+note "   solver:   $SOLVER"
+note "   singimg:  $SINGIMG"
+note "   config:   $CONFIG"
+note "   input:    $INPUT"
+note "   stimdir:  $STIMDIR"
+note "   output:   $OUTPUT"
 
 if   [ ${#OPTS[@]} -gt 0 ]
 then note "  options: ${OPTS[@]}"
@@ -218,55 +208,49 @@ else note "  options: <none>"
 fi
 if   [ $DEBUG = 1 ]
 then note "  using DEBUG mode"
-elif [ $FORCE = 1 ]
-then note "  forcing file-overwrite"
 fi
 
 
-# Run the Docker ###############################################################
+# Run the Singularity image ###############################################################
 
-# First, pull the docker if necessary:
-[ "$PULL" = 1 ] && {
-    note "Pulling docker image: $DOCKER ..."
-    pipecmd docker pull "$DOCKER"
-}
 # Build up the command line arguments, piece by piece
-if   [ -z "$CONFIG" ]
-then ARGS_IN=()
-elif [ -d "$CONFIG" ]
-then ARGS_IN=("-v" "${CONFIG}:/flywheel/v0/input"
-              "-v" "${INPUT}:/flywheel/v0/input/BIDS"
-              "-v" "${STIMDIR}:/flywheel/v0/input/BIDS/stimuli:ro")
-else # In this case, we also map the INPUT dir to the input
-     ARGS_IN=("-v" "${INPUT}:/flywheel/v0/input/BIDS"
-              "-v" "${CONFIG}:/flywheel/v0/input/config.json:ro"
-              "-v" "${STIMDIR}:/flywheel/v0/input/BIDS/stimuli:ro")
-fi
-ARGS_OUT=("-v" "${OUTPUT}:/flywheel/v0/output")
-if   [ $DEBUG = 1 ]
-then OPTS=("DEBUG" "${OPTS[@]}")
-else if [ $FORCE = 1 ]
-     then OPTS=("--force" "${OPTS[@]}")
-     fi
-     if [ $VERBOSE = 1 ]
-     then OPTS=("${OPTS[@]}" "--verbose")
-     fi
-fi
-# Put them all together:
-ARGS=("run" "--rm" "-it" "${ARGS_IN[@]}" "${ARGS_OUT[@]}" "$DOCKER" "${OPTS[@]}")
 
-note "Running docker command:"
-note "  > docker run --rm -it \\"
+if [ -d "$CONFIG" ]
+then ARGS_IN=("-B" "${CONFIG}:/flywheel/v0/input:rw"
+              "-B" "${INPUT}:/flywheel/v0/input/BIDS:rw"
+              "-B" "${STIMDIR}:/flywheel/v0/input/BIDS/stimuli:rw")
+
+fi
+ARGS_OUT=("-B" "${OUTPUT}:/flywheel/v0/output")
+
+
+
+if [ $VERBOSE = 1 ]
+then OPTS=("${OPTS[@]}" "--verbose")  
+fi
+
+# Put them all together:
+
+if  [ $DEBUG = 1 ]
+then
+ARGS=("${OPTS[@]}" "shell" "${ARGS_IN[@]}" "${ARGS_OUT[@]}" "$SINGIMG")
+else
+ARGS=("${OPTS[@]}" "run" "${ARGS_IN[@]}" "${ARGS_OUT[@]}" "$SINGIMG")
+fi 
+
+
+note "Running Singularity command:"
+note "  > singularity run \\"
 [ "${#ARGS_IN[@]}" = 0 ] || note "  |  " "${ARGS_IN[@]}" " \\"
 note "  |   " "${ARGS_OUT[@]}" " \\"
-note "  |   \"$DOCKER\" ${OPTS[@]}"
+note "  |   \"$SINGIMG\" ${OPTS[@]}"
 note ""
 note "------------------------------------------------------------"
 note ""
 
-pipecmd docker "${ARGS[@]}"
-DOCKEREXIT="$?"
+pipecmd singularity "${ARGS[@]}"
+SINGEXIT="$?"
 
-note "Docker has finished with exit code ${DOCKEREXIT}."
+note "Singularity has finished with exit code ${SINGEXIT}."
 
-exit $DOCKEREXIT
+exit $SINGEXIT

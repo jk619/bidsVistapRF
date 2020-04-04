@@ -236,11 +236,11 @@ then ARGS_IN=()
 elif [ -d "$CONFIG" ]
 then ARGS_IN=("-v" "${CONFIG}:/flywheel/v0/input"
               "-v" "${INPUT}:/flywheel/v0/input/BIDS"
-              "-v" "${STIMDIR}:/flywheel/v0/input/BIDS/stimuli:ro")
+              "-v" "${STIMDIR}:/flywheel/v0/input/BIDS/stimuli")
 else # In this case, we also map the INPUT dir to the input
      ARGS_IN=("-v" "${INPUT}:/flywheel/v0/input/BIDS"
               "-v" "${CONFIG}:/flywheel/v0/input/config.json:ro"
-              "-v" "${STIMDIR}:/flywheel/v0/input/BIDS/stimuli:ro")
+              "-v" "${STIMDIR}:/flywheel/v0/input/BIDS/stimuli")
 fi
 ARGS_OUT=("-v" "${OUTPUT}:/flywheel/v0/output")
 if   [ $DEBUG = 1 ]
