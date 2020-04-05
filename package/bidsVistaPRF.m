@@ -181,7 +181,7 @@ if debug.ifdebug == 2
 else
     aPRF2Maps_vista(projectDir,resultsdir,subject, session, modelType,debug);
     % save out .png files of angle, ecc, sigma, R2 for lh and rh
-    Maps2PNG(projectDir,resultsdir,subject);
+    Maps2PNG_vista(projectDir,resultsdir,subject);
 end
 end
 %% ******************************
