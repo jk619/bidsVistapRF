@@ -63,7 +63,7 @@ for ii = 1:length(d)
 end
 
 runnums                   =  1:length(d)/2; % / because there are 2 hemi
-runnums                   =  2; % / because there are 2 hemi
+% runnums                   =  2; % / because there are 2 hemi
 
 dataStr                   =  sprintf('%s*.mgz',cfg.space);
 

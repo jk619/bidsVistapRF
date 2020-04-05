@@ -7,7 +7,7 @@
 ## if you go beyond your job will be killed by SLURM
 
 #SBATCH --job-name=docker-vista
-#SBATCH -a 0    # run this script as 2 jobs with SLURM_ARRAY_TASK_ID = 0 and 1. Add more numbers for more jobs!
+#SBATCH -a 0-1    # run this script as 2 jobs with SLURM_ARRAY_TASK_ID = 0 and 1. Add more numbers for more jobs!
 #SBATCH --nodes=1 # nodes per job
 #SBATCH --cpus-per-task=16 #~2 days to run PRFs
 #SBATCH --mem=32g # More memory you request the less priority you get
@@ -27,7 +27,7 @@ module load freesurfer/6.0.0
 
 # We can bulk process by listing which subjects we want to run.
 # Note, no comma seperation!
-all_subjects=('wlsubj042')
+all_subjects=('wlsubj042 wlsubj001')
 
 # this variable tells us the job number:
 jobnum=$SLURM_ARRAY_TASK_ID

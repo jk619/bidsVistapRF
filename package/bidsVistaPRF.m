@@ -177,7 +177,6 @@ savejson('',inputVar,fullfile(resultsdir,fname));
 if debug.ifdebug == 2
     return
     disp('no maps created in the debug mode');
-    
 else
     aPRF2Maps_vista(projectDir,resultsdir,subject, session, modelType,debug);
     % save out .png files of angle, ecc, sigma, R2 for lh and rh
