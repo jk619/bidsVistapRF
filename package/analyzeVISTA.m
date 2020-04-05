@@ -19,7 +19,7 @@ copyfile(cfgfile,[tmp filesep 'config.json'])
 
 if contains(dockerscript,'singularity')
     
-    singimg = '/Users/jankurzawski/Dropbox/docker-vista/vista.simg';
+    singimg = '/home/jk7127/vista.simg';
     system(sprintf('./package/%s vista %s %s %s %s %s',dockerscript,averageFolDir,tmp,stimulusDir,mainDir,singimg));
     
 elseif contains(dockerscript,'docker')

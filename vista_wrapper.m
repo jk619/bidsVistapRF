@@ -1,29 +1,32 @@
 % To run PRF analysis on one subject with BIDS formatting with vista solver (docker)
-clc
-clear
-close all
+
 %% 1. open matlab and add paths:
 tbUse docker-vista;
 
 
 addpath(genpath('./package/')) % consider adding this to external of mritools
+addpath(genpath('/share/apps/freesurfer/6.0.0/matlab/'))
 
 session                 = 'nyu3t01';
 subject                 = 'wlsubj042';
+% subject                 ='$sub';
+
 runnumber               = 99;
 task                    = 'prf';
 
 
 
-mainDir                 = sprintf('./../'); % points to a folder were your BIDS formated folder is sitting 
+mainDir                 = sprintf('/scratch/jk7127'); % points to a folder were your BIDS formated folder is sitting 
 BidsDir                 = 'BIDS'; % name of the folder with derivatives
-projectDir              = sprintf('./../%s/',BidsDir); 
+projectDir              = sprintf('%s/%s/',mainDir,BidsDir); 
 apertureFolder          = sprintf('%sderivatives/stim_apertures',projectDir);
 dataFolder              = 'fmriprep';
 
 filesDir                = sprintf('%sderivatives/%s/sub-%s/ses-%s/func',projectDir,dataFolder,subject,session);
 averageFolName          = 'averageTCs';
 averageFolDir           = sprintf('%sderivatives/%s',projectDir,averageFolName);
+
+setenv('SUBJECTS_DIR',fullfile(projectDir, 'derivatives', 'freesurfer'))
 
 %% path2configs 
 
@@ -42,7 +45,7 @@ dockerscript            = 'prfanalyze_singularity.sh';
 
 debug.ifdebug           = 1; % fit pRFs only in rois specifed below
 debug.roiname           = {'V1_exvivo';'V2_exvivo'}; % Roi or Rois from freesurfer label directory for the debug mode
-debug.ifdebug           = 2; % fit pRFs only in 10 voxels
+% debug.ifdebug           = 2; % fit pRFs only in 10 voxels
 %% convert to mgz using freescdurfer
 
 d = dir(sprintf('%s/*%s*.gii',filesDir,cfg.space));

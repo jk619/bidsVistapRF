@@ -126,7 +126,7 @@ elseif debug.ifdebug == 2
     hdr.ImageSize(1)    = 10;
     data_tmp            = data_tmp(1:10,:,:,:);
     niftiwrite(data_tmp,[cfg.average_filename '_bold'],hdr,'Compressed',true);
-
+    
 else
     
     niftiwrite(data_tmp,[cfg.average_filename '_bold'],hdr,'Compressed',true);
@@ -136,29 +136,35 @@ end
 
 
 %% Run the docker and load the results
-analyzeVISTA(mainDir,cfg,averageFolDir,subject,session,apertureFolder,dockerscript);
+% analyzeVISTA(mainDir,cfg,averageFolDir,subject,session,apertureFolder,dockerscript);
 
 %% Save input arguments
 
 if debug.ifdebug == 1
     
     inputVar = struct('projectDir', projectDir, 'subject', subject, ...
-    'session', session, 'tasks',task, 'runnums', runnums, ...
-    'dataFolder', dataFolder, 'dataStr', dataStr, 'apertureFolder', apertureFolder, ...
-    'modelType',modelType, 'tr', tr, 'stimwidthdeg', cfg.param.stimulus.stimulus_diameter/2,'stimwidthpix',stimwidthpix,'vert',vert);
+        'session', session, 'tasks',task, 'runnums', runnums, ...
+        'dataFolder', dataFolder, 'dataStr', dataStr, 'apertureFolder', apertureFolder, ...
+        'modelType',modelType, 'tr', tr, 'stimwidthdeg', cfg.param.stimulus.stimulus_diameter/2,'stimwidthpix',stimwidthpix,'vert',vert);
 else
     inputVar = struct('projectDir', projectDir, 'subject', subject, ...
-    'session', session, 'tasks',task, 'runnums', runnums, ...
-    'dataFolder', dataFolder, 'dataStr', dataStr, 'apertureFolder', apertureFolder, ...
-    'modelType',modelType, 'tr', tr, 'stimwidthdeg', cfg.param.stimulus.stimulus_diameter/2,'stimwidthpix',stimwidthpix);
+        'session', session, 'tasks',task, 'runnums', runnums, ...
+        'dataFolder', dataFolder, 'dataStr', dataStr, 'apertureFolder', apertureFolder, ...
+        'modelType',modelType, 'tr', tr, 'stimwidthdeg', cfg.param.stimulus.stimulus_diameter/2,'stimwidthpix',stimwidthpix);
 end
 
 
 fname = sprintf('sub-%s_ses-%s_%s_inputVar.json', subject, session, cfg.param.options.wsearch(~isspace(cfg.param.options.wsearch)));
 
 %   <resultsdir>
-resultsdir   = fullfile (projectDir,'derivatives','prfanalyze-vista', ...
+
+latestDir = find_latest_dir(projectDir);
+
+
+resultsdir   = fullfile (projectDir,'derivatives',latestDir, ...
     sprintf('sub-%s',subject), sprintf('ses-%s',session));
+
+
 
 if ~exist(resultsdir, 'dir'); mkdir(resultsdir); end
 
@@ -167,11 +173,16 @@ savejson('',inputVar,fullfile(resultsdir,fname));
 % load(sprintf('%s/derivatives/%s/sub-%s/ses-%s/sub-%s_ses-%s_task-%s_acq-normal_run-%i_results.mat',projectDir,d(end).name,subject,session,subject,session,task,runnumber),'results');
 
 % save the results as mgz files
-aPRF2Maps_vista(projectDir, subject, session, modelType);
 
-% save out .png files of angle, ecc, sigma, R2 for lh and rh
-Maps2PNG(projectDir, subject, session, modelType);
-
+if debug.ifdebug == 2
+    return
+    disp('no maps created in the debug mode');
+    
+else
+    aPRF2Maps_vista(projectDir,resultsdir,subject, session, modelType,debug);
+    % save out .png files of angle, ecc, sigma, R2 for lh and rh
+    Maps2PNG(projectDir,resultsdir,subject);
+end
 end
 %% ******************************
 % ******** SUBROUTINES **********
@@ -187,7 +198,7 @@ file99nameFol = sprintf('%s/sub-%s/ses-%s/func/',averageFolName,subject,session)
 param.solver                            = 'vista';
 param.isPRFSynthData                    =  false;
 param.options.model                     = 'one gaussian';
-param.options.grid                      =  false
+param.options.grid                      =  false;
 param.options.wsearch                   = 'coarse to fine';
 param.options.detrend                   = 1;
 param.options.keepAllPoints             = false;
@@ -203,7 +214,7 @@ parambold.TaskName                      = 'prf';
 
 
 if ~exist(file99nameFol,'dir')
-    mkdir(file99nameFol)  
+    mkdir(file99nameFol)
 end
 
 file99name = sprintf('%ssub-%s_ses-%s_task-%s_acq-normal_run-99', ...
@@ -289,8 +300,19 @@ for hemi = 1 : length(hemispheres)
     
     data_tmp_roi = cat(1,data_tmp_roi,data_hemi_roi);
     vert{hemi,:}  = roi;
-
+    
+    
+end
 
 end
+
+
+function latestDir = find_latest_dir(projectDir)
+
+
+d = dir(sprintf('%s/derivatives/',projectDir));
+[~,id] = sort([d.datenum]);
+d = d(id);
+latestDir = d(end).name;
 
 end

@@ -1,4 +1,4 @@
-function Maps2PNG(bidsfolder, subject, session, desc)
+function Maps2PNG(bidsfolder,resultsdir, subject)
 % Visualize an MGZ ret data on a freesurfer surface in Matlab
 %
 % Maps2PNG(bidsfolder, subject, session, desc)
@@ -21,18 +21,12 @@ function Maps2PNG(bidsfolder, subject, session, desc)
 % set up our paths
 
 
-d = dir(sprintf('%s/derivatives/',bidsfolder))
-[~,id] = sort([d.datenum]);
-d = d(id);
 
-pth = fullfile(bidsfolder, 'derivatives',d(end).name, desc, ['sub-' subject], ['ses-' session]);
-pth = fullfile(bidsfolder, 'derivatives',d(end).name, ['sub-' subject], ['ses-' session]);
 
 freesurfer_dir =  fullfile(bidsfolder, 'derivatives/freesurfer');
-setenv('SUBJECTS_DIR',freesurfer_dir)
 
 fspth = fullfile(bidsfolder, 'derivatives', 'freesurfer',  ['sub-' subject], 'surf');
-figureDir = fullfile(pth, 'figures');
+figureDir = fullfile(resultsdir, 'figures');
 
 
 hemispheres = {'lh';'rh'};
@@ -54,7 +48,7 @@ for hemi = 1 : length(hemispheres)
     
     for thisMap = 1:length(mapsList)
         
-        map_file.(mapsList{thisMap}).(hemispheres{hemi}) = load_mgh(fullfile(pth, sprintf('%s.%s.mgz',hemispheres{hemi},mapsList{thisMap})));
+        map_file.(mapsList{thisMap}).(hemispheres{hemi}) = load_mgh(fullfile(resultsdir, sprintf('%s.%s.mgz',hemispheres{hemi},mapsList{thisMap})));
         
     end
     
@@ -140,7 +134,7 @@ for thisFig = 1:length(mapsList)
             
             cbh=colorbar('North');
             colormap(hsv)
-            caxis([0 2*pi])
+            caxis([-pi pi])
             title(variable)
             set(cbh,'XTick',[-pi 0 pi])
             set(cbh,'XTickLabel',{'-\pi';'0';'\pi'})
@@ -171,13 +165,7 @@ for thisFig = 1:length(mapsList)
             set(cbh,'XTick',[0 0.25 0.5 0.75 1])
             set(cbh,'XTickLabel',{'0';'0.25';'0.5';'0.75';'1'})
             
-            if contains(desc,'coarse')
-                
-                title('R2')
-            else
-                title(variable)
-                
-            end
+       
     end
     
     
