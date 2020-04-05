@@ -193,6 +193,12 @@ INPUT="$ABSPATH"
     SINGIMG="$ABSPATH"
 }
 
+
+tmp_dir=$(mktemp -d -t ci-XXXXXXXXXX)
+#abspath "$tmp_dir"
+#TMP="$ABSPATH"
+
+
 # Okay, let's print a diagnostic message (if verbose is on)
 note "Running prfanalyze.sh with the following options:"
 note "   solver:   $SOLVER"
@@ -215,10 +221,13 @@ fi
 
 # Build up the command line arguments, piece by piece
 
+
+
 if [ -d "$CONFIG" ]
 then ARGS_IN=("-B" "${CONFIG}:/flywheel/v0/input:rw"
               "-B" "${INPUT}:/flywheel/v0/input/BIDS:rw"
-              "-B" "${STIMDIR}:/flywheel/v0/input/BIDS/stimuli:rw")
+              "-B" "${STIMDIR}:/flywheel/v0/input/BIDS/stimuli:rw"
+              "-B" "${tmp_dir}:/running/:rw")
 
 fi
 ARGS_OUT=("-B" "${OUTPUT}:/flywheel/v0/output")

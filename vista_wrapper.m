@@ -37,7 +37,7 @@ cfg.load                = 0; % create default cfg file (NYU color retinotopy set
 cfg.space               = 'native';
 
 
-dockerscript            = 'prfanalyze_docker.sh';
+dockerscript            = 'prfanalyze_singularity.sh';
 
 
 debug.ifdebug           = 1; % fit pRFs only in rois specifed below
