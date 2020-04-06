@@ -16,7 +16,7 @@ task                    = 'prf';
 
 
 
-mainDir                 = sprintf('/scratch/jk7127'); % points to a folder were your BIDS formated folder is sitting 
+mainDir                 = sprintf('./../'); % points to a folder were your BIDS formated folder is sitting 
 BidsDir                 = 'BIDS'; % name of the folder with derivatives
 projectDir              = sprintf('%s/%s/',mainDir,BidsDir); 
 apertureFolder          = sprintf('%sderivatives/stim_apertures',projectDir);
@@ -40,7 +40,7 @@ cfg.load                = 0; % create default cfg file (NYU color retinotopy set
 cfg.space               = 'native';
 
 
-dockerscript            = 'prfanalyze_singularity.sh';
+dockerscript            = 'prfanalyze_docker.sh';
 
 
 debug.ifdebug           = 1; % fit pRFs only in rois specifed below
@@ -63,7 +63,7 @@ for ii = 1:length(d)
 end
 
 runnums                   =  1:length(d)/2; % / because there are 2 hemi
-runnums                   =  2; % / because there are 2 hemi
+% runnums                   =  2; % / because there are 2 hemi
 
 dataStr                   =  sprintf('%s*.mgz',cfg.space);
 
