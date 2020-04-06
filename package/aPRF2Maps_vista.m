@@ -43,6 +43,8 @@ hemi{2} = zeros(length(rcurv),1);
 fields = {'x0';'y0';'sigma';'rawrss';'rss'};
 results.model{1}.sigma = results.model{1}.sigma.major;
 
+
+if  debug.ifdebug == 1
 for f = 1 : length(fields)
     
     for h = 1 : length(hemi)
@@ -67,6 +69,8 @@ for t = 1 : length(tmp)
         
     end
     
+end
+
 end
 assert(isequal(numel(lcurv) + numel(rcurv), numel(results.model{1}.x0)), ...
     'The number of vertices in the aprf results and the l&r curv files do not match;');
