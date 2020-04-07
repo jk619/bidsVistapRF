@@ -8,15 +8,14 @@ addpath(genpath('./package/')) % consider adding this to external of mritools
 addpath(genpath('/share/apps/freesurfer/6.0.0/matlab/'))
 
 session                 = 'nyu3t01';
-subject                 = 'wlsubj042';
-% subject                 ='$sub';
+% subject                 = 'wlsubj019';`
 
 runnumber               = 99;
 task                    = 'prf';
 
 
 
-mainDir                 = sprintf('./../'); % points to a folder were your BIDS formated folder is sitting 
+mainDir                 = sprintf('/scratch/jk7127'); % points to a folder were your BIDS formated folder is sitting 
 BidsDir                 = 'BIDS'; % name of the folder with derivatives
 projectDir              = sprintf('%s/%s/',mainDir,BidsDir); 
 apertureFolder          = sprintf('%sderivatives/stim_apertures',projectDir);
@@ -40,7 +39,7 @@ cfg.load                = 0; % create default cfg file (NYU color retinotopy set
 cfg.space               = 'native';
 
 
-dockerscript            = 'prfanalyze_docker.sh';
+dockerscript            = 'prfanalyze_singularity.sh';
 
 
 debug.ifdebug           = 1; % fit pRFs only in rois specifed below
@@ -48,8 +47,8 @@ debug.roiname           = {'V1_exvivo';'V2_exvivo'}; % Roi or Rois from freesurf
 % debug.ifdebug           = 2; % fit pRFs only in 10 voxels
 %% convert to mgz using freescdurfer
 
-d = dir(sprintf('%s/*%s*.gii',filesDir,cfg.space));
-% d = dir(sprintf('%s/*%s*.mgz',filesDir,cfg.space));
+% d = dir(sprintf('%s/*%s*.gii',filesDir,cfg.space));
+d = dir(sprintf('%s/*%s*.mgz',filesDir,cfg.space));
 
 for ii = 1:length(d)
     
