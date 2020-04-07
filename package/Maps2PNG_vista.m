@@ -1,4 +1,4 @@
-function Maps2PNG_vista(bidsfolder,resultsdir, subject,runnums)
+function Maps2PNG_vista(projectDir, subject,session,runnums)
 % Visualize an MGZ ret data on a freesurfer surface in Matlab
 %
 % Maps2PNG(bidsfolder, subject, session, desc)
@@ -20,11 +20,12 @@ function Maps2PNG_vista(bidsfolder,resultsdir, subject,runnums)
 
 % set up our paths
 
+latestDir = find_latest_dir(projectDir);
+resultsdir   = fullfile (projectDir,'derivatives',latestDir, ...
+    sprintf('sub-%s',subject), sprintf('ses-%s',session));
 
 
-
-
-fspth = fullfile(bidsfolder, 'derivatives', 'freesurfer',  ['sub-' subject], 'surf');
+fspth = fullfile(projectDir, 'derivatives', 'freesurfer',  ['sub-' subject], 'surf');
 figureDir = fullfile(resultsdir, 'figures');
 
 import mlreportgen.report.*
@@ -247,7 +248,7 @@ for r = 1 : length(path2roi)
         scatter(ecc, prfsize,'.','k')
         xlabel('Eccentricity');
         ylabel('pRF size');
-        R = corrcoef(ecc,prfsize)
+        R = corrcoef(ecc,prfsize);
         % add line of best fit
         coeff = polyfit(ecc, prfsize, 1);
         xFit = linspace(min(ecc), max(ecc), 20);
@@ -296,5 +297,20 @@ rptview(rpt)
         set(gcf, 'Position', [150 100 750 625]);
         axis tight
     end
+
+end
+
+%% ******************************
+% ******** SUBROUTINES **********
+% *******************************
+
+function latestDir = find_latest_dir(projectDir)
+
+
+d = dir(sprintf('%s/derivatives/',projectDir));
+d = d([d(:).isdir]==1);
+[~,id] = sort([d.datenum]);
+d = d(id);
+latestDir = d(end).name;
 
 end

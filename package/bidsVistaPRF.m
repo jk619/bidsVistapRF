@@ -175,12 +175,10 @@ savejson('',inputVar,fullfile(resultsdir,fname));
 % save the results as mgz files
 
 if debug.ifdebug == 2
-    return
     disp('no maps created in the debug mode');
+    return
 else
-    aPRF2Maps_vista(projectDir,resultsdir,subject, session, modelType,debug);
-    % save out .png files of angle, ecc, sigma, R2 for lh and rh
-    Maps2PNG_vista(projectDir,resultsdir,subject);
+    aPRF2Maps_vista(projectDir,resultsdir,subject, session,modelType,debug);
 end
 end
 %% ******************************
