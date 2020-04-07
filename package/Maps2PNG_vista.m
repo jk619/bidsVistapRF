@@ -1,4 +1,4 @@
-function Maps2PNG(bidsfolder,resultsdir, subject)
+function Maps2PNG_vista(bidsfolder,resultsdir, subject,runnums)
 % Visualize an MGZ ret data on a freesurfer surface in Matlab
 %
 % Maps2PNG(bidsfolder, subject, session, desc)
@@ -23,11 +23,23 @@ function Maps2PNG(bidsfolder,resultsdir, subject)
 
 
 
-freesurfer_dir =  fullfile(bidsfolder, 'derivatives/freesurfer');
 
 fspth = fullfile(bidsfolder, 'derivatives', 'freesurfer',  ['sub-' subject], 'surf');
 figureDir = fullfile(resultsdir, 'figures');
 
+import mlreportgen.report.*
+import mlreportgen.dom.*
+
+rpt = Report(sprintf('%s/pRFSummary_%s',figureDir,subject));
+p1  = Paragraph(sprintf('prFSummary'))
+p1.Bold=true;
+p1.FontSize = '30';
+add(rpt,p1);
+
+
+p1 = Paragraph(sprintf('This is a report for %s with %.0f repetitions',subject,length(runnums)));
+p1.FontSize = '20';
+add(rpt,p1);
 
 hemispheres = {'lh';'rh'};
 path2roi = {'V1_exvivo';'V2_exvivo'};
@@ -56,10 +68,15 @@ end
 
 % loop through the maps and create png pics
 
+chapter = Chapter();
+chapter.Title = 'pRFMaps';
+add(rpt,chapter);
 
 for thisFig = 1:length(mapsList)
     
-    figure(1);clf
+%     fig=figure(1);clf
+    fig = figure(1);clf
+    
     for hemi = 1 : length(hemispheres)
         
         roi = [];
@@ -78,7 +95,7 @@ for thisFig = 1:length(mapsList)
         myroi = zeros(size(map_file.vexpl.(hemispheres{hemi})));
         myroi(roi) = 1;
         
-      
+        
         thr  = double(map_file.vexpl.(hemispheres{hemi})>0) & double(map_file.eccen.(hemispheres{hemi})<Inf) & myroi ;
         
         subplot(2,2,hemi)
@@ -162,20 +179,104 @@ for thisFig = 1:length(mapsList)
             cbh=colorbar('North');
             colormap(hot)
             caxis([0 1])
+            title(variable)
             set(cbh,'XTick',[0 0.25 0.5 0.75 1])
             set(cbh,'XTickLabel',{'0';'0.25';'0.5';'0.75';'1'})
             
-       
+            
     end
     
     
-    
+  
+%     fig.Snapshot.Caption = mapsList{thisFig};
+%     fig.Snapshot.Height = '5in';
+
     axis off
-    set(gca,'Fontsize',30)
+    set(gca,'Fontsize',20)
+    
+    figReporter0 = Figure(fig);
+%     add(rpt,figReporter0);
+%     t_map{thisFig} = Image(getSnapshotImage(figReporter0,rpt));
+    t_map = Image(getSnapshotImage(figReporter0,rpt));
+
+    t_map.Width = '4.7in';
+    t_map.Height = '4.1in';
+
+    add(rpt,t_map);
+
     saveas(gcf, ([figureDir (sprintf('/%s_maps.png',  mapsList{thisFig}))]));
     
+     
+
+
+end
+
+% tab = Table({t_map{1},t_map{2},t_map{3},t_map{4};mapsList{1},mapsList{2},mapsList{3},mapsList{4}})
+% add(rpt,tab);
+
+
+
+%%
+
+chapter = Chapter();
+
+ct = 1;
+
+
+for r = 1 : length(path2roi)
+    for hemi = 1 :length(hemispheres)
+        
+        
+        
+        roi = [];
+        
+        ind  = read_label(['sub-' subject],sprintf ('%s.%s%s',hemispheres{hemi},path2roi{r}));
+        roi  = [roi; ind(:,1) + 1];
+        myroi = zeros(size(map_file.vexpl.(hemispheres{hemi})));
+        myroi(roi) = 1;
+        
+        %         thr  = double(map_file.vexpl.(hemispheres{hemi})>0.15) & double(map_file.eccen.(hemispheres{hemi})<10) & myroi & double(map_file.sigma.(hemispheres{hemi})>0.25);
+        thr  = double(map_file.vexpl.(hemispheres{hemi})>0.2) & double(map_file.eccen.(hemispheres{hemi})<12) & myroi;
+        
+        
+        fig2=figure(2);
+        sgtitle(sprintf('Var thr > %.1f, Ecc < %.0f',0.2,12))
+        subplot(2,2,ct)
+        prfsize = map_file.(mapsList{3}).(hemispheres{hemi}).*thr;
+        ecc = map_file.(mapsList{2}).(hemispheres{hemi}).*thr;
+        scatter(ecc, prfsize,'.','k')
+        xlabel('Eccentricity');
+        ylabel('pRF size');
+        R = corrcoef(ecc,prfsize)
+        % add line of best fit
+        coeff = polyfit(ecc, prfsize, 1);
+        xFit = linspace(min(ecc), max(ecc), 20);
+        yFit = polyval(coeff , xFit);
+        hold on;
+        plot(xFit, yFit, 'b-', 'LineWidth', 2.5);
+        grid on;
+        title(sprintf('size vs eccen, %s %s',path2roi{r},hemispheres{hemi}),'Interpreter','None')
+        xlim([0 12])
+        ylim([0 6])
+        
+        ct = ct + 1;
+        %         title(sprintf('%s %s',path2roi{r},hemispheres{hemi}))
+        set(gca,'Fontsize',10)
+        set(gcf,'Position',[179   313   486   496])
+    end
     
 end
+
+saveas(gcf, ([figureDir (sprintf('/%s_size_vs_eccen.png',  mapsList{thisFig}))]));
+
+figReporter0 = Figure(fig2);
+chapter.Title = 'pRFplots';
+add(rpt,chapter);
+figReporter0.Snapshot.Height = [];
+figReporter0.Snapshot.Width = [];
+add(rpt,figReporter0);
+
+rptview(rpt)
 %% relevant sub functions
     function plot_mesh(faces, vertices, map, cmap)
         t = trimesh(faces+1, vertices(:,1), vertices(:,2), vertices(:,3), map, 'FaceColor', 'flat');

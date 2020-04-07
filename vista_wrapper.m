@@ -2,22 +2,22 @@
 
 %% 1. open matlab and add paths:
 tbUse docker-vista;
-
+close all
 
 addpath(genpath('./package/')) % consider adding this to external of mritools
 addpath(genpath('/share/apps/freesurfer/6.0.0/matlab/'))
 
 session                 = 'nyu3t01';
-% subject                 = 'wlsubj019';`
+subject                 = 'wlsubj042';
 
 runnumber               = 99;
 task                    = 'prf';
 
 
 
-mainDir                 = sprintf('/scratch/jk7127'); % points to a folder were your BIDS formated folder is sitting 
+mainDir                 = sprintf('./../'); % points to a folder were your BIDS formated folder is sitting
 BidsDir                 = 'BIDS'; % name of the folder with derivatives
-projectDir              = sprintf('%s/%s/',mainDir,BidsDir); 
+projectDir              = sprintf('%s/%s/',mainDir,BidsDir);
 apertureFolder          = sprintf('%sderivatives/stim_apertures',projectDir);
 dataFolder              = 'fmriprep';
 
@@ -27,7 +27,7 @@ averageFolDir           = sprintf('%sderivatives/%s',projectDir,averageFolName);
 
 setenv('SUBJECTS_DIR',fullfile(projectDir, 'derivatives', 'freesurfer'))
 
-%% path2configs 
+%% path2configs
 
 
 cfg.basename            = sprintf('sub-%s_ses-%s_task-%s_acq-normal_run-%i',subject,session,task,runnumber);
@@ -45,6 +45,8 @@ dockerscript            = 'prfanalyze_singularity.sh';
 debug.ifdebug           = 1; % fit pRFs only in rois specifed below
 debug.roiname           = {'V1_exvivo';'V2_exvivo'}; % Roi or Rois from freesurfer label directory for the debug mode
 % debug.ifdebug           = 2; % fit pRFs only in 10 voxels
+
+recoverFigures          = 1;
 %% convert to mgz using freescdurfer
 
 % d = dir(sprintf('%s/*%s*.gii',filesDir,cfg.space));
@@ -62,14 +64,19 @@ for ii = 1:length(d)
 end
 
 runnums                   =  1:length(d)/2; % / because there are 2 hemi
+% runnums                   =  1:6;
 % runnums                   =  2; % / because there are 2 hemi
 
 dataStr                   =  sprintf('%s*.mgz',cfg.space);
 
+if recoverFigures
+    
+    recoverFigs(projectDir,subject,session,runnums);
+    
+else
 
-bidsVistaPRF(mainDir,projectDir,subject,session,task,runnums,dataFolder,dataStr,apertureFolder,filesDir,debug,averageFolDir,cfg,dockerscript,runnumber);
+    bidsVistaPRF(mainDir,projectDir,subject,session,task,runnums,dataFolder,dataStr,apertureFolder,filesDir,debug,averageFolDir,cfg,dockerscript,runnumber);
 
-
-
+end
 
 
