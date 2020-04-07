@@ -1,11 +1,11 @@
-function analyzeVISTA(mainDir,cfg,averageFolDir,subject,session,apertureFolder,dockerscript)
+function analyzeVISTA(mainDir,cfg,averageFolDir,subject,session,apertureFolder,dockerscript,scriptDir)
 
 
 
 stimulusDir = [apertureFolder filesep sprintf('sub-%s/ses-%s/',subject,session)];
 cfgfile = [cfg.average_filename '_cfg.json'];
 
-system(sprintf('chmod u+x ./package/%s',dockerscript))
+system(sprintf('chmod u+x %s%s',scriptDir,dockerscript))
 
 
 % if contains(dockerscript,'singularity')
@@ -20,11 +20,11 @@ copyfile(cfgfile,[tmp filesep 'config.json'])
 if contains(dockerscript,'singularity')
     
     singimg = '/home/jk7127/vista.simg';
-    system(sprintf('./package/%s vista %s %s %s %s %s',dockerscript,averageFolDir,tmp,stimulusDir,mainDir,singimg));
+    system(sprintf('%s%s vista %s %s %s %s %s',scriptDir,dockerscript,averageFolDir,tmp,stimulusDir,mainDir,singimg));
     
 elseif contains(dockerscript,'docker')
     
-    system(sprintf('./package/%s vista %s %s %s %s',dockerscript,averageFolDir,tmp,stimulusDir,mainDir));
+    system(sprintf('%s%s vista %s %s %s %s',scriptDir,dockerscript,averageFolDir,tmp,stimulusDir,mainDir));
     
 end
 

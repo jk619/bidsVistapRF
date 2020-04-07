@@ -1,4 +1,4 @@
-function bidsVistaPRF(mainDir,projectDir,subject,session,task,runnums,dataFolder,dataStr,apertureFolder,filesDir,debug,averageFolDir,cfg,dockerscript,runnumber)
+function bidsVistaPRF(mainDir,projectDir,subject,session,task,runnums,dataFolder,dataStr,apertureFolder,filesDir,debug,averageFolDir,cfg,dockerscript,runnumber,estHRF,scriptDir)
 
 
 %
@@ -77,7 +77,7 @@ if ~exist('cfg', 'var') || isempty(dataFolder) || cfg.load == 0
     %  remaining two files are event file with stimulus details and a
     %  coresponding json file. The output is the averge
     
-    cfg = preapre_configs_vista(subject,session,task,stimulus,averageFolDir,runnumber);
+    cfg = preapre_configs_vista(subject,session,task,stimulus,averageFolDir,runnumber,estHRF);
     
     
 else
@@ -136,7 +136,7 @@ end
 
 
 %% Run the docker and load the results
-analyzeVISTA(mainDir,cfg,averageFolDir,subject,session,apertureFolder,dockerscript);
+analyzeVISTA(mainDir,cfg,averageFolDir,subject,session,apertureFolder,dockerscript,scriptDir);
 
 %% Save input arguments
 
@@ -185,7 +185,7 @@ end
 % ******** SUBROUTINES **********
 % *******************************
 
-function cfg = preapre_configs_vista(subject,session,task,stimulus,averageFolName,runnumber)
+function cfg = preapre_configs_vista(subject,session,task,stimulus,averageFolName,runnumber,estHRF)
 
 
 file99nameFol = sprintf('%s/sub-%s/ses-%s/func/',averageFolName,subject,session);
@@ -194,7 +194,13 @@ file99nameFol = sprintf('%s/sub-%s/ses-%s/func/',averageFolName,subject,session)
 
 param.solver                            = 'vista';
 param.isPRFSynthData                    =  false;
-param.options.model                     = 'one gaussian';
+
+if estHRF
+    param.options.model                     = 'one gaussian and hrf';
+else
+    param.options.model                     = 'one gaussian';
+end
+
 param.options.grid                      =  false;
 param.options.wsearch                   = 'coarse to fine';
 param.options.detrend                   = 1;
