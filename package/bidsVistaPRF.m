@@ -180,7 +180,7 @@ if debug.ifdebug == 2
     disp('*************************************')
     return
 else
-    aPRF2Maps_vista(projectDir,resultsdir,subject, session,modelType,debug);
+    vistaPRF2MAP(projectDir,resultsdir,subject, session,modelType,debug);
 end
 end
 %% ******************************

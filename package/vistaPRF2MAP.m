@@ -1,4 +1,4 @@
-function [] = aPRF2Maps_vista(bidsfolder,resultsdir,subject, session, desc,debug)
+function [] = vistaPRF2MAP(bidsfolder,resultsdir,subject, session, desc,debug)
 % Convert the output of analyze PRF, i.e. results struct, to an MGZ
 %
 %

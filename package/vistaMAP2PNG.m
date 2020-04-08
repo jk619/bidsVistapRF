@@ -1,4 +1,4 @@
-function Maps2PNG_vista(projectDir, subject,session,runnums)
+function vistaMAP2PNG(projectDir, subject,session,runnums)
 % Visualize an MGZ ret data on a freesurfer surface in Matlab
 %
 % Maps2PNG(bidsfolder, subject, session, desc)
