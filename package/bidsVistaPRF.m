@@ -179,8 +179,6 @@ if debug.ifdebug == 2
     disp('**no maps created in the debug mode**');
     disp('*************************************')
     return
-else
-    aPRF2Maps_vista(projectDir,resultsdir,subject, session,modelType,debug);
 end
 end
 %% ******************************

@@ -28,6 +28,12 @@ resultsdir   = fullfile (projectDir,'derivatives',latestDir, ...
 fspth = fullfile(projectDir, 'derivatives', 'freesurfer',  ['sub-' subject], 'surf');
 figureDir = fullfile(resultsdir, 'figures');
 
+
+% if the fig dir does not exist, make one
+if ~exist(figureDir, 'dir')
+    mkdir(figureDir);
+end
+
 import mlreportgen.report.*
 import mlreportgen.dom.*
 
