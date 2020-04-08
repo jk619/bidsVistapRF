@@ -243,14 +243,14 @@ for r = 1 : length(path2roi)
         myroi(roi) = 1;
         
         %         thr  = double(map_file.vexpl.(hemispheres{hemi})>0.15) & double(map_file.eccen.(hemispheres{hemi})<10) & myroi & double(map_file.sigma.(hemispheres{hemi})>0.25);
-        thr  = double(map_file.vexpl.(hemispheres{hemi})>0.2) & double(map_file.eccen.(hemispheres{hemi})<12) & double(map_file.eccen.(hemispheres{hemi})>0) & double(map_file.sigma.(hemispheres{hemi})>0) & myroi;
+        thr  = double(map_file.vexpl.(hemispheres{hemi})>0.2) & double(map_file.eccen.(hemispheres{hemi})<12) & double(map_file.eccen.(hemispheres{hemi})>0) & double(map_file.eccen.(hemispheres{hemi})>0) & myroi;
         
         
         fig2=figure(2);
         sgtitle(sprintf('Var thr > %.1f, Ecc < %.0f',0.2,12))
         subplot(2,2,ct)
-        prfsize = map_file.sigma.(hemispheres{hemi})(thr);
-        ecc = map_file.eccen.(hemispheres{hemi})(thr);
+        prfsize = map_file.(mapsList{3}).(hemispheres{hemi}).*thr;
+        ecc = map_file.(mapsList{2}).(hemispheres{hemi}).*thr;
         
 
 
