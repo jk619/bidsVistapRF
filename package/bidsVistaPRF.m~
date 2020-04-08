@@ -197,15 +197,14 @@ file99nameFol = sprintf('%s/sub-%s/ses-%s/func/',averageFolName,subject,session)
 param.solver                            = 'vista';
 param.isPRFSynthData                    =  false;
 
-param.options.model                     = 'one gaussian';
-param.options.grid                      =  false;
-
 if estHRF
-    param.options.wsearch                   = 'coarse to fine and hrf';
-else
-    param.options.wsearch                   = 'coarse to fine';
-end
+    param.options.model                     = 'one gaussian and hrf';
 
+    param.options.model                     = 'one gaussian';
+
+
+param.options.grid                      =  false;
+param.options.wsearch                   = 'coarse to fine and hrf';
 param.options.detrend                   = 1;
 param.options.keepAllPoints             = false;
 param.options.numberStimulusGridPoints  = 50;
