@@ -136,7 +136,7 @@ end
 
 
 %% Run the docker and load the results
-% analyzeVISTA(mainDir,cfg,averageFolDir,subject,session,apertureFolder,dockerscript,scriptDir);
+analyzeVISTA(mainDir,cfg,averageFolDir,subject,session,apertureFolder,dockerscript,scriptDir);
 
 %% Save input arguments
 
