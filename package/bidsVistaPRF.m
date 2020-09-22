@@ -90,7 +90,7 @@ end
 
 tr   = cfg.parambold.RepetitionTime;
 modelType = cfg.param.options.wsearch(~isspace(cfg.param.options.wsearch));
-
+% 
 averageScans = runnums>0;
 
 if ~isempty(averageScans)
@@ -170,7 +170,6 @@ if ~exist(resultsdir, 'dir'); mkdir(resultsdir); end
 
 savejson('',inputVar,fullfile(resultsdir,fname));
 
-% load(sprintf('%s/derivatives/%s/sub-%s/ses-%s/sub-%s_ses-%s_task-%s_acq-normal_run-%i_results.mat',projectDir,d(end).name,subject,session,subject,session,task,runnumber),'results');
 
 % save the results as mgz files
 
@@ -201,9 +200,9 @@ param.options.model                     = 'one gaussian';
 param.options.grid                      =  false;
 
 if estHRF
-    param.options.wsearch                   = 'coarse to fine and hrf';
+    param.options.wsearch               = 'coarse to fine and hrf';
 else
-    param.options.wsearch                   = 'coarse to fine';
+    param.options.wsearch               = 'coarse to fine';
 end
 
 param.options.detrend                   = 1;
