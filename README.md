@@ -7,12 +7,14 @@ singularity build --remote vista.simg docker
 where docker files is 
 
 .........................................
+
 Bootstrap: docker
 From: garikoitz/prfanalyze-vista:latest
 
 %post
 chmod 755 /compiled/run_prfanalyze_vista.sh 
 chmod 755 /compiled/prfanalyze_vista
+
 
 .........................................
 
