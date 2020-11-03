@@ -1,10 +1,10 @@
 # bidsVistapRF
 
-# to run it as a singularity image we need to build the image remotely (if on mac)
+to run it as a singularity image we need to build the image remotely (if on mac)
 
 singularity build --remote vista.simg docker 
 
-# where docker files is 
+where docker files is 
 
 ---------------------------------------
 Bootstrap: docker
