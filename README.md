@@ -6,7 +6,7 @@ singularity build --remote vista.simg docker
 
 where docker files is 
 
----------------------------------------
+.........................................
 Bootstrap: docker
 From: garikoitz/prfanalyze-vista:latest
 
@@ -14,6 +14,6 @@ From: garikoitz/prfanalyze-vista:latest
 chmod 755 /compiled/run_prfanalyze_vista.sh 
 chmod 755 /compiled/prfanalyze_vista
 
----------------------------------------
+.........................................
 
 To use remote build you need to login to singularity sylabs on the cloud - > singularity remote login 
