@@ -312,12 +312,13 @@ end
 end
 
 
+
 function latestDir = find_latest_dir(projectDir)
 
 
-d = dir(sprintf('%s/derivatives/',projectDir));
-[~,id] = sort([d.datenum]);
-d = d(id);
-latestDir = d(end).name;
+% d = dir(sprintf('%s/derivatives/',projectDir));
+% [~,id] = sort([d.datenum]);
+% d = d(id);
+latestDir = 'prfanalyze-vista';
 
 end
