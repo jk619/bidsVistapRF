@@ -1,4 +1,4 @@
-# bidsVistapRF
+#bidsVistapRF
 
 to run it as a singularity image we need to build the image remotely (if on mac)
 
@@ -11,7 +11,7 @@ Bootstrap: docker
 From: garikoitz/prfanalyze-vista:latest
 
 %post
-chmod 755 /compiled/run_prfanalyze_vista.sh
+chmod 755 /compiled/run_prfanalyze_vista.sh \n
 chmod 755 /compiled/prfanalyze_vista
 ---------------------------------------
 
