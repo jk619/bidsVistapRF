@@ -11,8 +11,9 @@ Bootstrap: docker
 From: garikoitz/prfanalyze-vista:latest
 
 %post
-chmod 755 /compiled/run_prfanalyze_vista.sh \n
+chmod 755 /compiled/run_prfanalyze_vista.sh 
 chmod 755 /compiled/prfanalyze_vista
+
 ---------------------------------------
 
 To use remote build you need to login to singularity sylabs on the cloud - > singularity remote login 
